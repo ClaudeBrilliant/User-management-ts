@@ -16,6 +16,20 @@ class Task {
     this.assignedTo = assignedTo;
   }
 
+  createTask(title: string, description: string): void {
+    this.id = Math.floor(Math.random() * 1000); // Simulate ID generation
+    this.title = title;
+    this.description = description; 
+    this.assignedTo = undefined;
+  }
+
+  retrieveTask(taskid: number, title:string , description: string, assignedTo?: number): void {
+    this.id = taskid;
+    this.title = title;
+    this.description = description;
+    this.assignedTo = assignedTo;
+  }
+
   updateTask(title: string, description: string): void {
     this.title = title;
     this.description = description;
@@ -56,9 +70,24 @@ class User {
     this.isActive = isActive;
   }
 
+  createUser(name: string, email: string): void {
+    this.id = Math.floor(Math.random() * 1000); 
+    this.name = name;
+    this.email = email;
+    this.isActive = true;
+  }
+
+  retrieveUser(userId: number, name: string, email: string, isActive: boolean): void {
+    this.id = userId;
+    this.name = name;
+    this.email = email;
+    this.isActive = isActive;
+  }
+
   updateUser(name: string, email: string): void {
     this.name = name;
     this.email = email;
+  
   }
 
   deleteUser(): void {
