@@ -8,5 +8,13 @@
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "description": ""
+  "description": "",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ClaudeBrilliant/User-management-ts.git"
+  },
+  "bugs": {
+    "url": "https://github.com/ClaudeBrilliant/User-management-ts/issues"
+  },
+  "homepage": "https://github.com/ClaudeBrilliant/User-management-ts#readme"
 }
