@@ -1,8 +1,3 @@
-//  build a User and Task Management System using TypeScript. The core objective is to manage two entities, Users and Tasks, allowing for the creation, retrieval,
-// updating, and deletion (CRUD) of both. Additionally, you must implement functionality to assign tasks to users, unassign them, and retrieve tasks assigned to specific
-// users, ensuring proper management of user-task relationships. The system should be designed with scalability and maintainability in mind, allowing for future enhancements and integrations.
-
-
 class Task {
   id: number;
   title: string;
@@ -16,30 +11,9 @@ class Task {
     this.assignedTo = assignedTo;
   }
 
-  createTask(title: string, description: string): void {
-    this.id = Math.floor(Math.random() * 1000); // Simulate ID generation
-    this.title = title;
-    this.description = description; 
-    this.assignedTo = undefined;
-  }
-
-  retrieveTask(taskid: number, title:string , description: string, assignedTo?: number): void {
-    this.id = taskid;
-    this.title = title;
-    this.description = description;
-    this.assignedTo = assignedTo;
-  }
-
   updateTask(title: string, description: string): void {
     this.title = title;
     this.description = description;
-  }
-
-  deleteTask(): void {
-    this.id = 0;
-    this.title = "";
-    this.description = "";
-    this.assignedTo = undefined;
   }
 
   assignTask(userId: number): void {
@@ -70,31 +44,9 @@ class User {
     this.isActive = isActive;
   }
 
-  createUser(name: string, email: string): void {
-    this.id = Math.floor(Math.random() * 1000); 
-    this.name = name;
-    this.email = email;
-    this.isActive = true;
-  }
-
-  retrieveUser(userId: number, name: string, email: string, isActive: boolean): void {
-    this.id = userId;
-    this.name = name;
-    this.email = email;
-    this.isActive = isActive;
-  }
-
   updateUser(name: string, email: string): void {
     this.name = name;
     this.email = email;
-  
-  }
-
-  deleteUser(): void {
-    this.id = 0;
-    this.name = "";
-    this.email = "";
-    this.isActive = false;
   }
 
   deactivate(): void {
@@ -112,13 +64,106 @@ class User {
   }
 }
 
+class TaskUserManager {
+  private users: User[] = [];
+  private tasks: Task[] = [];
 
 
+  createUser(name: string, email: string): User {
+    const newUser = new User(Date.now(), name, email);
+    this.users.push(newUser);
+    return newUser;
+  }
 
-const user1 = new User(1, "John Doe", "c@gmail.com");
-user1.deactivate();
-console.log(user1.getUserInfo());
+  getUserById(userId: number): User | undefined {
+    return this.users.find(u => u.id === userId);
+  }
 
-const task1 = new Task(101, "Fix Bug", "Fix the login bug");
-task1.assignTask(user1.id);
-console.log(task1.getTaskInfo());
+  getAllUsers(): User[] {
+    return this.users;
+    console.log(this.users)
+    
+  }
+
+  deleteUser(userId: number): void {
+    this.users = this.users.filter(u => u.id !== userId);
+    this.tasks.forEach(t => {
+      if (t.assignedTo === userId) t.unassignTask();
+    });
+  }
+
+  
+  createTask(title: string, description: string): Task {
+    const newTask = new Task(Date.now(), title, description);
+    this.tasks.push(newTask);
+    return newTask;
+  }
+
+  getTaskById(taskId: number): Task | undefined {
+    return this.tasks.find(t => t.id === taskId);
+  }
+
+  getAllTasks(): Task[] {
+    return this.tasks;
+  }
+
+  deleteTask(taskId: number): void {
+    this.tasks = this.tasks.filter(t => t.id !== taskId);
+  }
+
+  
+  assignTaskToUser(taskId: number, userId: number): boolean {
+    const user = this.getUserById(userId);
+    const task = this.getTaskById(taskId);
+
+    if (!user || !user.isActive) {
+      console.error(`Cannot assign: User [${userId}] does not exist or is inactive.`);
+      return false;
+    }
+
+    if (!task) {
+      console.error(`Cannot assign: Task [${taskId}] not found.`);
+      return false;
+    }
+
+    task.assignTask(userId);
+    return true;
+  }
+
+  unassignTask(taskId: number): void {
+    const task = this.getTaskById(taskId);
+    task?.unassignTask();
+  }
+
+  getTasksForUser(userId: number): Task[] {
+    return this.tasks.filter(task => task.assignedTo === userId);
+  }
+}
+
+
+const manager = new TaskUserManager();
+
+// Create a user
+const user1 = manager.createUser("Clyde", "clyde@example.com");
+
+console.log(manager.getAllUsers());
+
+// user1.deactivate();
+
+// console.log(user1.getUserInfo());
+
+// // Create a task
+// const task1 = manager.createTask("Frontend", "Build the frontend");
+
+// // Try to assign (will fail - user is inactive)
+//  manager.assignTaskToUser(task1.id, user1.id);
+
+// // Activate and assign again
+// user1.activate();
+// manager.assignTaskToUser(task1.id, user1.id);
+
+//  console.log(task1.getTaskInfo());
+
+// // Get tasks for user
+// const userTasks = manager.getTasksForUser(user1.id);
+// console.log("Tasks for Clyde:", userTasks.map(t => t.getTaskInfo()));
